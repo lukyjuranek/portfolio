@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# URL shortener redirects (replace with your actual profile URLs)
+[[redirects]]
+  from = "/linkedin"
+  to = "https://www.linkedin.com/in/lukasjuranek"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/github"
+  to = "https://github.com/lukyjuranek"
+  status = 302
+  force = true
