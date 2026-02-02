@@ -41,7 +41,3 @@ npm run preview
 
 - [Astro](https://astro.build/) - Web framework
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
-
-## 📝 Notes
-
-The old files (`index.html`, `styles.css`, `custom-element.js`) are kept in the root directory for reference but are no longer used. The project now uses Astro components instead of custom web components.
