@@ -18,13 +18,14 @@ import thumbnail14Img from '../assets/img/thumbnail-14.png';
 import thumbnail15Img from '../assets/img/thumbnail-15.png';
 import thumbnail16Img from '../assets/img/thumbnail-16.png';
 import thumbnail17Img from '../assets/img/thumbnail-17.png';
+import thumbnail18Img from '../assets/img/thumbnail-17.png';
 
 interface Props {
   href?: string;
   src: string;
   title: string;
   text: string;
-  tag?: 'WEB' | 'GAME' | 'APP' | 'OTHER';
+  tag?: 'WEB' | 'GAME' | 'APP' | 'OTHER' | 'ML';
 }
 
 const { href, src, title, text, tag = 'other' } = Astro.props;
@@ -34,6 +35,7 @@ const tagColors: Record<string, { bg: string; text: string }> = {
   GAME: { bg: 'bg-purple-600', text: 'text-white' },
   APP: { bg: 'bg-green-600', text: 'text-white' },
   OTHER: { bg: 'bg-gray-600', text: 'text-white' },
+  ML: { bg: 'bg-red-600', text: 'text-white' },
 };
 
 // const tagColor = tagColors[tag] || tagColors.other;
@@ -41,8 +43,6 @@ const tagColor = { bg: 'bg-transparent', text: 'text-gray-400' };
 
 // Map image paths to imported images
 const imageMap: Record<string, ImageMetadata> = {
-  '/img/aroa.png': aroaImg,
-  '/img/bluebee.png': bluebeeImg,
   '/img/thumbnail-1.jpg': thumbnail1Img,
   '/img/thumbnail-2.png': thumbnail2Img,
   '/img/thumbnail-3.png': thumbnail3Img,
@@ -59,6 +59,7 @@ const imageMap: Record<string, ImageMetadata> = {
   '/img/thumbnail-15.png': thumbnail15Img,
   '/img/thumbnail-16.png': thumbnail16Img,
   '/img/thumbnail-17.png': thumbnail17Img,
+  '/img/thumbnail-18.png': thumbnail18Img,
 };
 
 const image = imageMap[src];
