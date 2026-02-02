@@ -14,3 +14,18 @@
   to = "https://github.com/lukyjuranek"
   status = 302
   force = true
+
+
+[[redirects]]
+  from = "/resume"
+  to = "/docs/CV-Lukas-Juranek.pdf"
+  status = 302
+  force = true
+
+
+[[redirects]]
+  from = "/cv"
+  to = "/docs/CV-Lukas-Juranek.pdf"
+  status = 302
+  force = true
+
