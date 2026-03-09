@@ -32,16 +32,15 @@ interface Props {
 
 const { href, src, title, text, tag = 'other' } = Astro.props;
 
-const tagColors: Record<string, { bg: string; text: string }> = {
-  WEB: { bg: 'bg-blue-600', text: 'text-white' },
-  GAME: { bg: 'bg-purple-600', text: 'text-white' },
-  APP: { bg: 'bg-green-600', text: 'text-white' },
-  OTHER: { bg: 'bg-gray-600', text: 'text-white' },
-  ML: { bg: 'bg-red-600', text: 'text-white' },
+const tagColors: Record<string, { bg: string; text: string; border: string }> = {
+  WEB: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
+  GAME: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20' },
+  APP: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+  OTHER: { bg: 'bg-gray-500/10', text: 'text-gray-400', border: 'border-gray-500/20' },
+  ML: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
 };
 
-// const tagColor = tagColors[tag] || tagColors.other;
-const tagColor = { bg: 'bg-transparent', text: 'text-gray-400' };
+const tagColor = tagColors[tag] || tagColors.OTHER;
 
 // Map image paths to imported images
 const imageMap: Record<string, ImageMetadata> = {
@@ -69,43 +68,43 @@ const imageMap: Record<string, ImageMetadata> = {
 const image = imageMap[src];
 ---
 
-<a href={href}>
-  <div class="h-full rounded transition duration-500 ease-in-out transform hover:scale-[1.02]">
-    <div class="relative">
+<a href={href} class="group block">
+  <div class="h-full rounded-xl bg-neutral-900/50 border border-white/[0.06] transition-all duration-300 ease-out hover:border-white/[0.12] hover:bg-neutral-900/80">
+    <div class="relative overflow-hidden rounded-t-xl">
       {image ? (
-        <Image 
-          src={image} 
-          alt={title} 
-          class="rounded-xl w-full h-auto project-card-shadow border border-gray-900"
+        <Image
+          src={image}
+          alt={title}
+          class="w-full h-auto transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           loading="lazy"
         />
       ) : (
-        <img 
-          src={src} 
-          alt={title} 
-          class="rounded-xl w-full h-auto project-card-shadow border border-gray-900"
+        <img
+          src={src}
+          alt={title}
+          class="w-full h-auto transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           loading="lazy"
         />
       )}
     </div>
-    <div class="p-6 flex flex-col gap-5">
+    <div class="p-5 flex flex-col gap-3">
       <div class="flex flex-row sm:flex-row sm:items-center justify-between">
-        <div class="flex items-center gap-2 text-xl font-medium text-white">
+        <div class="flex items-center gap-2 text-lg font-medium text-white">
           {title}
           {href && href.trim() !== '' && (
-            <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg class="h-3.5 w-3.5 text-gray-500 group-hover:text-gray-300 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
               <title>External link</title>
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
             </svg>
           )}
         </div>
         {tag && (
-          <span class={`${tagColor.bg} ${tagColor.text} text-xs px-3 pb-1 pt-[6px] rounded-full border border-1 border-gray-700 tracking-wide whitespace-nowrap self-start sm:self-auto`}>
+          <span class={`${tagColor.bg} ${tagColor.text} ${tagColor.border} text-xs px-3 pb-1 pt-[6px] rounded-full border tracking-wide whitespace-nowrap self-start sm:self-auto`}>
             {tag}
           </span>
         )}
       </div>
-      <div class="text-gray-400 font-light">{text}</div>
+      <div class="text-gray-400 text-sm font-light leading-relaxed">{text}</div>
     </div>
   </div>
 </a>

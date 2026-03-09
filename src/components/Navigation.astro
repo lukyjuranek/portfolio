@@ -4,9 +4,9 @@
 <nav class="px-4 py-3 md:px-6 md:py-4 w-full text-white text-sm md:text-base bg-transparent absolute top-0 left-0 right-0 z-40">
   <div class="container mx-auto flex items-center justify-end">
     <div class="text-right hidden md:block">
-      <a href="/" class="ml-6 md:ml-8 hover:text-gray-300 transition-colors">Home</a>
-      <a href="#projects" class="ml-6 md:ml-8 hover:text-gray-300 transition-colors">Projects</a>
-      <a href="#contact" class="ml-6 md:ml-8 hover:text-gray-300 transition-colors">Contact</a>
+      <a href="/" class="ml-6 md:ml-8 text-gray-300 hover:text-white transition-colors duration-200">Home</a>
+      <a href="#projects" class="ml-6 md:ml-8 text-gray-300 hover:text-white transition-colors duration-200">Projects</a>
+      <a href="#contact" class="ml-6 md:ml-8 text-gray-300 hover:text-white transition-colors duration-200">Contact</a>
     </div>
     <div class="block md:hidden">
       <button
@@ -29,10 +29,10 @@
   </div>
   <div
     id="mobile-menu"
-    class="pt-24 px-4 hidden md:hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 backdrop-blur-sm z-10 flex flex-col"
+    class="pt-24 px-4 hidden md:hidden fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-md z-10 flex flex-col mobile-menu-overlay"
   >
     <div class="flex-1 flex flex-col justify-start items-end px-4 pb-8">
-      <div class="flex flex-col space-y-8 items-end">
+      <div class="flex flex-col space-y-8 items-end mobile-menu-links">
         <a href="/" class="text-white hover:text-gray-300 transition-colors py-3 text-2xl font-medium text-right">Home</a>
         <a href="#projects" class="text-white hover:text-gray-300 transition-colors py-3 text-2xl font-medium text-right">Projects</a>
         <a href="#contact" class="text-white hover:text-gray-300 transition-colors py-3 text-2xl font-medium text-right">Contact</a>
@@ -95,3 +95,32 @@
   })();
 </script>
 
+<style>
+  .mobile-menu-overlay {
+    animation: menuFadeIn 0.2s ease-out;
+  }
+
+  .mobile-menu-links a {
+    animation: menuSlideIn 0.3s ease-out both;
+  }
+
+  .mobile-menu-links a:nth-child(1) { animation-delay: 0.05s; }
+  .mobile-menu-links a:nth-child(2) { animation-delay: 0.1s; }
+  .mobile-menu-links a:nth-child(3) { animation-delay: 0.15s; }
+
+  @keyframes menuFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes menuSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>
