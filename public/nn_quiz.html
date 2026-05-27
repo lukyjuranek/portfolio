@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks — Exam Quiz</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f1a;
+    --surface: #151929;
+    --card: #1c2135;
+    --border: #2a3050;
+    --accent: #5b8dee;
+    --accent2: #8b5cf6;
+    --gold: #f5c542;
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #7c8ba1;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── HEADER ── */
+  header {
+    width: 100%;
+    background: linear-gradient(135deg, #0f1525 0%, #1a1040 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  #breadcrumb {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  #breadcrumb span { color: var(--text); }
+
+  /* ── MAIN ── */
+  main {
+    width: 100%;
+    max-width: 860px;
+    padding: 32px 20px 60px;
+    flex: 1;
+  }
+
+  /* ── SCREEN TRANSITIONS ── */
+  .screen { display: none; animation: fadeIn 0.3s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── HOME SCREEN ── */
+  .home-hero {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .home-hero h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #5b8dee, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .home-hero p { color: var(--muted); font-size: 1rem; }
+  .overall-progress {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .overall-score {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--gold);
+    min-width: 80px;
+    text-align: center;
+  }
+  .overall-label { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+  .progress-bar-wrap { flex: 1; }
+  .progress-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.5s ease;
+  }
+
+  .dungeon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .dungeon-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .dungeon-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent-color, #5b8dee22) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .dungeon-card:hover {
+    border-color: var(--accent-color, var(--accent));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .dungeon-icon { font-size: 2rem; margin-bottom: 12px; }
+  .dungeon-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .dungeon-card .dungeon-meta { font-size: 0.8rem; color: var(--muted); }
+  .dungeon-stars { margin-top: 12px; font-size: 1.1rem; letter-spacing: 2px; }
+  .star-filled { color: var(--gold); }
+  .star-empty { color: var(--border); }
+
+  /* ── DUNGEON SCREEN ── */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 24px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); border-color: var(--muted); }
+  .dungeon-title-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dungeon-title-bar .icon { font-size: 2.5rem; }
+  .dungeon-title-bar h2 { font-size: 1.5rem; font-weight: 800; }
+  .dungeon-title-bar p { color: var(--muted); font-size: 0.9rem; }
+  .boss-list { display: flex; flex-direction: column; gap: 14px; }
+  .boss-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.2s;
+  }
+  .boss-card:hover { border-color: var(--accent); transform: translateX(4px); }
+  .boss-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+  .boss-info { flex: 1; }
+  .boss-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .boss-info .tag {
+    display: inline-block;
+    background: var(--border);
+    color: var(--muted);
+    border-radius: 99px;
+    padding: 2px 10px;
+    font-size: 0.72rem;
+    font-family: monospace;
+  }
+  .boss-result-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 99px;
+  }
+  .badge-perfect { background: #16532233; color: var(--green); border: 1px solid #22c55e55; }
+  .badge-good { background: #1d3a0033; color: #86efac; border: 1px solid #86efac55; }
+  .badge-ok { background: #3a2a0033; color: var(--gold); border: 1px solid #f5c54255; }
+  .badge-retry { background: #3a000033; color: var(--red); border: 1px solid #ef444455; }
+  .badge-new { background: var(--border); color: var(--muted); }
+
+  /* ── QUIZ SCREEN ── */
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .quiz-boss-name { font-weight: 700; font-size: 1rem; }
+  .quiz-counter { color: var(--muted); font-size: 0.9rem; }
+  .quiz-progress {
+    height: 5px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .question-number {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .question-prompt {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    font-weight: 500;
+  }
+  .answers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .answer-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.15s;
+    line-height: 1.5;
+  }
+  .answer-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: #1e2740;
+  }
+  .answer-btn:disabled { cursor: default; }
+  .answer-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .answer-btn.correct {
+    border-color: var(--green);
+    background: #052e1622;
+  }
+  .answer-btn.correct .answer-letter {
+    background: var(--green);
+    color: #000;
+  }
+  .answer-btn.wrong {
+    border-color: var(--red);
+    background: #2d050522;
+  }
+  .answer-btn.wrong .answer-letter {
+    background: var(--red);
+    color: #fff;
+  }
+  .answer-btn.dimmed { opacity: 0.4; }
+  .answer-btn.selected-correct { animation: pulse-green 0.4s ease; }
+  .answer-btn.selected-wrong { animation: shake 0.4s ease; }
+  @keyframes pulse-green {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); box-shadow: 0 0 20px #22c55e44; }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .feedback-bar {
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-top: 14px;
+    font-size: 0.9rem;
+    display: none;
+    align-items: center;
+    gap: 12px;
+  }
+  .feedback-bar.show { display: flex; }
+  .feedback-bar.correct { background: #05280e; border: 1px solid #22c55e55; color: #86efac; }
+  .feedback-bar.wrong { background: #1f0808; border: 1px solid #ef444455; color: #fca5a5; }
+  .feedback-icon { font-size: 1.3rem; }
+  .next-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .next-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .next-btn:active { transform: translateY(0); }
+
+  /* ── RESULT SCREEN ── */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+  }
+  .result-boss-icon { font-size: 4rem; margin-bottom: 16px; }
+  .result-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .result-sub { color: var(--muted); margin-bottom: 28px; }
+  .result-score-ring {
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    margin: 0 auto 28px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border: 4px solid var(--border);
+    position: relative;
+  }
+  .result-score-ring .big { font-size: 2.8rem; font-weight: 800; line-height: 1; }
+  .result-score-ring .small { font-size: 0.8rem; color: var(--muted); }
+  .result-breakdown {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .result-q {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .result-q.ok { background: #052e16; color: var(--green); border: 2px solid var(--green); }
+  .result-q.bad { background: #1f0808; color: var(--red); border: 2px solid var(--red); }
+  .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-secondary {
+    padding: 12px 28px;
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--muted); }
+
+  /* ── KATEX OVERRIDES ── */
+  .katex { font-size: 1em; }
+  .katex-display { margin: 0.3em 0; }
+
+  /* ── SCROLL TO TOP ── */
+  #scroll-top {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    width: 40px; height: 40px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 1rem;
+  }
+  #scroll-top.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔️ NN Exam Quest</h1>
+  <div id="breadcrumb"></div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="home-hero">
+      <h2>Choose Your Dungeon</h2>
+      <p>60 questions across 6 dungeons · defeat all bosses to master Neural Networks</p>
+    </div>
+    <div class="overall-progress">
+      <div>
+        <div class="overall-score" id="total-score">0</div>
+        <div class="overall-label">Total Score</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-label">
+          <span>Overall Progress</span>
+          <span id="progress-text">0 / 60 answered</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar-fill" id="main-progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="dungeon-grid" id="dungeon-grid"></div>
+  </div>
+
+  <!-- DUNGEON -->
+  <div id="screen-dungeon" class="screen">
+    <button class="back-btn" onclick="showHome()">← Back to Map</button>
+    <div class="dungeon-title-bar">
+      <div class="icon" id="dungeon-icon-big"></div>
+      <div>
+        <h2 id="dungeon-title"></h2>
+        <p id="dungeon-subtitle"></p>
+      </div>
+    </div>
+    <div class="boss-list" id="boss-list"></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <button class="back-btn" onclick="confirmLeave()">← Leave Boss Fight</button>
+    <div class="quiz-header">
+      <div class="quiz-boss-name" id="quiz-boss-name"></div>
+      <div class="quiz-counter" id="quiz-counter"></div>
+    </div>
+    <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+    <div class="question-card">
+      <div class="question-number" id="q-number"></div>
+      <div class="question-prompt" id="q-prompt"></div>
+    </div>
+    <div class="answers-grid" id="answers-grid"></div>
+    <div class="feedback-bar" id="feedback-bar">
+      <span class="feedback-icon" id="feedback-icon"></span>
+      <span id="feedback-text"></span>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()" style="display:none"></button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="screen-result" class="screen">
+    <div class="result-card">
+      <div class="result-boss-icon" id="res-icon"></div>
+      <div class="result-title" id="res-title"></div>
+      <div class="result-sub" id="res-sub"></div>
+      <div class="result-score-ring" id="res-ring">
+        <div class="big" id="res-score"></div>
+        <div class="small">/ 5</div>
+      </div>
+      <div class="result-breakdown" id="res-breakdown"></div>
+      <div class="result-actions">
+        <button class="btn-primary" onclick="retryBoss()">⟳ Retry Boss</button>
+        <button class="btn-secondary" onclick="showDungeon(currentDungeonIdx)">← Back to Dungeon</button>
+        <button class="btn-secondary" onclick="showHome()">🗺 World Map</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const DATA = {
+  "dungeons": [
+    {
+      "id": "the-perceptron-depths",
+      "name": "The Perceptron Depths",
+      "bosses": [
+        {
+          "id": "sigmoid-serpent",
+          "name": "The Sigmoid Serpent",
+          "topicTag": "logistic-regression",
+          "questions": [
+            { "prompt": "In binary logistic regression, $P(y=1|\\mathbf{x})$ is modeled as:", "answers": ["$\\sigma(\\mathbf{w}^\\top\\mathbf{x} + w_0)$", "$\\tanh(\\mathbf{w}^\\top\\mathbf{x} + w_0)$", "$\\text{softmax}(\\mathbf{w}^\\top\\mathbf{x} + w_0)$", "$\\text{ReLU}(\\mathbf{w}^\\top\\mathbf{x} + w_0)$"], "correct": 0 },
+            { "prompt": "The sigmoid function $\\sigma(z)$ outputs values in which range?", "answers": ["$(-1,\\, 1)$", "$(0,\\, 1)$", "$(-\\infty,\\, +\\infty)$", "$[0,\\, \\infty)$"], "correct": 1 },
+            { "prompt": "What is the maximum value of the sigmoid derivative $\\sigma'(z)$?", "answers": ["$1.0$", "$0.5$", "$0.25$", "$0.1$"], "correct": 2 },
+            { "prompt": "The gradient of binary cross-entropy loss w.r.t. weights $\\mathbf{w}$ is:", "answers": ["$-(y - \\hat{y})\\,\\mathbf{x}$", "$(\\hat{y} - y)\\,\\mathbf{x}$", "$y\\,\\mathbf{x}$", "$\\hat{y}\\,\\mathbf{x}$"], "correct": 1 },
+            { "prompt": "In multiclass logistic regression, which function maps linear activations to class probabilities that sum to 1?", "answers": ["Sigmoid", "ReLU", "Softmax", "Tanh"], "correct": 2 }
+          ]
+        },
+        {
+          "id": "cross-entropy-colossus",
+          "name": "Cross-Entropy Colossus",
+          "topicTag": "loss-functions",
+          "questions": [
+            { "prompt": "Which is the correct binary classification loss?", "answers": ["$L = \\sum(y - \\hat{y})^2$", "$L = -[y\\log\\hat{y} + (1-y)\\log(1-\\hat{y})]$", "$L = -\\sum_k y_k \\log \\hat{y}_k$", "$L = \\mathbb{E}[D(\\tilde{x})] - \\mathbb{E}[D(x)]$"], "correct": 1 },
+            { "prompt": "For multiclass classification with one-hot labels, the appropriate loss is:", "answers": ["Binary cross-entropy", "Mean squared error", "Categorical cross-entropy: $L = -\\sum_k y_k \\log \\hat{p}_k$", "Hinge loss"], "correct": 2 },
+            { "prompt": "The VAE training objective is to maximize:", "answers": ["The likelihood $p(x)$ directly", "The ELBO: $\\mathbb{E}_q[\\log p(x|z)] - \\text{KL}(q \\| p)$", "The binary cross-entropy", "The Wasserstein distance"], "correct": 1 },
+            { "prompt": "Which of the following loss functions does NOT contain log terms?", "answers": ["Binary cross-entropy", "Categorical cross-entropy", "Mean squared error (MSE)", "ELBO"], "correct": 2 },
+            { "prompt": "The WGAN-GP loss adds which regularization term to the critic?", "answers": ["$L_1$ penalty on weights", "KL divergence from prior", "Gradient penalty: $\\lambda\\,\\mathbb{E}[(\\|\\nabla D(\\hat{x})\\|_2 - 1)^2]$", "Feature matching: $\\|\\mathbb{E}[f(x)] - \\mathbb{E}[f(G(z))]\\|^2$"], "correct": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-backprop-labyrinth",
+      "name": "The Backprop Labyrinth",
+      "bosses": [
+        {
+          "id": "gradient-ghoul",
+          "name": "The Gradient Ghoul",
+          "topicTag": "backprop-pytorch",
+          "questions": [
+            { "prompt": "What does <code>loss.backward()</code> do in PyTorch?", "answers": ["Updates all model parameters using SGD", "Computes and stores gradients via backpropagation in <code>.grad</code>", "Resets all gradients to zero", "Performs a fresh forward pass"], "correct": 1 },
+            { "prompt": "What does <code>optimizer.step()</code> do?", "answers": ["Computes the loss value", "Resets all gradients to zero", "Updates parameters using stored <code>.grad</code> values", "Shuffles the training data"], "correct": 2 },
+            { "prompt": "What happens if <code>optimizer.zero_grad()</code> is NOT called between batches?", "answers": ["The model trains faster due to momentum", "Gradients from previous batches accumulate, corrupting updates", "The learning rate is automatically reduced", "Dropout is silently disabled"], "correct": 1 },
+            { "prompt": "The error signal $\\delta_j^{(m)}$ at a hidden layer is computed as:", "answers": ["Only the current layer's weight matrix", "$g'(z_j^{(m)})$ times the weighted sum of errors from the NEXT layer", "The input $\\mathbf{x}$ multiplied by the learning rate", "The learning rate divided by the batch size"], "correct": 1 },
+            { "prompt": "In which direction does backpropagation flow to compute gradients?", "answers": ["Forward, from input to output", "Backward, from output to input", "Bidirectionally at each layer simultaneously", "Only through the final output layer"], "correct": 1 }
+          ]
+        },
+        {
+          "id": "activation-archon",
+          "name": "The Activation Archon",
+          "topicTag": "activation-functions",
+          "questions": [
+            { "prompt": "Why does ReLU help alleviate the vanishing gradient problem compared to sigmoid?", "answers": ["Its derivative is always 0.25", "Its derivative is 1 for positive inputs (does not saturate)", "It clips values to $[-1, 1]$", "It uses batch normalization internally"], "correct": 1 },
+            { "prompt": "What is the derivative of $\\tanh(z)$ at $z = 0$?", "answers": ["$0.0$", "$0.25$", "$0.5$", "$1.0$"], "correct": 3 },
+            { "prompt": "Which activation function can cause 'dead neurons' that produce zero gradient and never recover?", "answers": ["Tanh", "Sigmoid", "ReLU", "Softmax"], "correct": 2 },
+            { "prompt": "For a 10-layer network with sigmoid activations, the gradient magnitude at the first layer is approximately:", "answers": ["$0.25^{10} \\approx 10^{-6}$", "$0.5^{10} \\approx 10^{-3}$", "$1.0$ (unchanged)", "$10^{10}$ (it explodes)"], "correct": 0 },
+            { "prompt": "Softmax is typically used:", "answers": ["In hidden layers to replace ReLU", "In the output layer of a multiclass classifier", "As a replacement for batch normalization", "In regression output layers"], "correct": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-regularization-fortress",
+      "name": "The Regularization Fortress",
+      "bosses": [
+        {
+          "id": "overfitting-ogre",
+          "name": "The Overfitting Ogre",
+          "topicTag": "regularization",
+          "questions": [
+            { "prompt": "Which regularization technique randomly disables a fraction of neurons during each training step?", "answers": ["$L_2$ weight decay", "Early stopping", "Dropout", "Batch normalization"], "correct": 2 },
+            { "prompt": "$L_2$ regularization adds which penalty term to the loss?", "answers": ["$\\lambda\\|\\mathbf{w}\\|_1$ (sum of absolute values)", "$\\frac{\\lambda}{2}\\|\\mathbf{w}\\|^2$ (sum of squared weights)", "$\\lambda \\cdot \\max|w|$", "$\\lambda \\cdot \\text{KL}(q\\|p)$"], "correct": 1 },
+            { "prompt": "What is early stopping?", "answers": ["Stopping training once training loss reaches zero", "Stopping training when validation loss stops improving, to prevent overfitting", "Removing neurons with near-zero gradients", "Applying dropout only to the output layer"], "correct": 1 },
+            { "prompt": "$L_1$ regularization (Lasso) tends to produce which effect on weights?", "answers": ["All weights become equal", "Sparsity — drives some weights exactly to zero", "Weights grow without bound", "Weights are clipped to $[-1, 1]$"], "correct": 1 },
+            { "prompt": "During inference with dropout (without inverted dropout during training), outputs should be:", "answers": ["Doubled to compensate for disabled neurons", "Left unchanged — dropout is still active at test time", "Scaled down by $(1 - p)$, where $p$ is the dropout rate", "Normalized to zero mean"], "correct": 2 }
+          ]
+        },
+        {
+          "id": "batchnorm-basilisk",
+          "name": "The BatchNorm Basilisk",
+          "topicTag": "batchnorm-residuals-init",
+          "questions": [
+            { "prompt": "Batch Normalization normalizes activations using statistics computed across:", "answers": ["All features within a single sample (like Layer Norm)", "The current mini-batch (mean and variance per feature)", "Pre-computed statistics from the test set", "Only the maximum and minimum values in the layer"], "correct": 1 },
+            { "prompt": "In Batch Normalization, what is the role of the learned parameters $\\gamma$ and $\\beta$?", "answers": ["They are the batch mean and variance", "They scale and shift the normalized output, restoring representational power", "They control the dropout rate for each feature", "They set the per-layer learning rate"], "correct": 1 },
+            { "prompt": "In a ResNet, the residual connection computes $H(\\mathbf{x}) = $", "answers": ["$F(\\mathbf{x}) \\cdot \\mathbf{x}$ (element-wise multiply)", "$F(\\mathbf{x}) + \\mathbf{x}$ (output plus identity shortcut)", "$F(\\mathbf{x}) - \\mathbf{x}$", "$F(\\mathbf{x}) / \\|\\mathbf{x}\\|$"], "correct": 1 },
+            { "prompt": "Xavier (Glorot) initialization sets the variance of weights to:", "answers": ["$1 / n_{\\text{in}}$", "$2 / n_{\\text{in}}$ (this is He init for ReLU)", "$2 / (n_{\\text{in}} + n_{\\text{out}})$", "$0.01$ (small constant)"], "correct": 2 },
+            { "prompt": "During inference, Batch Normalization uses:", "answers": ["Fresh statistics from the current test batch", "Running mean and variance accumulated during training", "Zero mean and unit variance always", "The statistics of the last training batch only"], "correct": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-convolutional-citadel",
+      "name": "The Convolutional Citadel",
+      "bosses": [
+        {
+          "id": "filter-fiend",
+          "name": "The Filter Fiend",
+          "topicTag": "cnn-mechanics",
+          "questions": [
+            { "prompt": "Given input $N=32$, filter $F=5$, stride $= 1$, padding $= 0$, what is the CNN output size?", "answers": ["$28$", "$30$", "$32$", "$27$"], "correct": 0 },
+            { "prompt": "Weight sharing in CNNs means:", "answers": ["Different filter weights are used at each spatial position", "The same filter weights are applied at every spatial position", "Weights are shared across different layers of the network", "Filters are copied from a pretrained model"], "correct": 1 },
+            { "prompt": "What is the primary role of $1\\times 1$ convolutions as used in Inception modules?", "answers": ["Increase spatial resolution via upsampling", "Introduce spatial non-linearity only", "Reduce the number of channels cheaply (dimensionality reduction)", "Replace batch normalization in deep networks"], "correct": 2 },
+            { "prompt": "A 1D CNN with $K=4$ filters of length $F=3$ applied to $C=1$ input channel has how many unique weight parameters (excluding biases)?", "answers": ["$4$", "$12$", "$3$", "$16$"], "correct": 1 },
+            { "prompt": "In a 1D CNN, reusing the same filter weights at every time step is called:", "answers": ["Local connectivity", "Temporal pooling", "Weight sharing", "Dilation"], "correct": 2 }
+          ]
+        },
+        {
+          "id": "architecture-abomination",
+          "name": "The Architecture Abomination",
+          "topicTag": "cnn-architectures-style",
+          "questions": [
+            { "prompt": "Which CNN architecture introduced residual (skip) connections to enable training of 150+ layer networks?", "answers": ["AlexNet", "GoogLeNet / Inception", "ResNet", "LeNet"], "correct": 2 },
+            { "prompt": "Approximately how many parameters does AlexNet have?", "answers": ["4 million", "25 million", "62 million", "140 million"], "correct": 2 },
+            { "prompt": "GoogLeNet reduced its parameter count to ~4M primarily by using:", "answers": ["Deeper fully connected layers with weight sharing", "$1\\times1$ convolutions before larger filters inside Inception modules", "Removing all batch normalization", "Average pooling only instead of strided convolutions"], "correct": 1 },
+            { "prompt": "In Neural Style Transfer, the style loss uses which matrix to capture texture statistics?", "answers": ["Covariance matrix of pixel values", "Gram matrix: $G^l_{ij} = \\sum_k F^l_{ik} F^l_{jk}$", "Hessian matrix of the loss", "Identity matrix scaled by content"], "correct": 1 },
+            { "prompt": "In Neural Style Transfer, what is being optimized during gradient descent?", "answers": ["The CNN weights on the style layers", "The class label distribution", "The pixel values of the generated image", "The learning rate schedule"], "correct": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-generative-abyss",
+      "name": "The Generative Abyss",
+      "bosses": [
+        {
+          "id": "latent-lich",
+          "name": "The Latent Lich",
+          "topicTag": "vae",
+          "questions": [
+            { "prompt": "In a VAE, the reparameterization trick $z = \\mu + \\sqrt{\\sigma} \\cdot \\varepsilon$, $\\varepsilon \\sim \\mathcal{N}(0,I)$ is needed to:", "answers": ["Reduce the total number of model parameters", "Allow backpropagation through the stochastic sampling step", "Ensure $z$ follows a uniform distribution", "Replace the decoder with a closed-form expression"], "correct": 1 },
+            { "prompt": "The $\\text{KL}$ term in the VAE ELBO acts as:", "answers": ["A reconstruction quality measure", "A regularizer keeping the latent distribution close to the prior $\\mathcal{N}(0,I)$", "A gradient penalty on the encoder", "A dropout-style regularizer on the latent code"], "correct": 1 },
+            { "prompt": "The closed-form KL divergence $\\text{KL}(\\mathcal{N}(\\mu,\\sigma)\\|\\mathcal{N}(0,I))$ equals:", "answers": ["$\\frac{1}{2}\\sum_j(\\mu_j^2 + \\sigma_j - \\ln\\sigma_j - 1)$", "$\\sum_j |\\mu_j - \\sigma_j|$", "$-\\mathbb{E}[\\log p(x|z)]$", "$\\|\\mu\\|^2$ only"], "correct": 0 },
+            { "prompt": "Compared to PCA, a trained VAE can:", "answers": ["Only perform linear transformations of the data", "Generate diverse new samples by sampling $z \\sim \\mathcal{N}(0,I)$", "Always achieve lower reconstruction error with fewer parameters", "Operate without any reconstruction objective"], "correct": 1 },
+            { "prompt": "Posterior collapse in VAEs occurs when:", "answers": ["The encoder produces extremely large variance values", "The decoder ignores $z$ entirely and the KL term goes to zero", "The learning rate is set too high", "The decoder network is too small to reconstruct $x$"], "correct": 1 }
+          ]
+        },
+        {
+          "id": "gan-golem",
+          "name": "The GAN Golem",
+          "topicTag": "gans-wgan",
+          "questions": [
+            { "prompt": "The optimal GAN discriminator $D^*(x)$ equals:", "answers": ["$p_{\\text{data}}(x)$ alone", "$\\dfrac{p_{\\text{data}}(x)}{p_{\\text{data}}(x) + p_g(x)}$", "$1 - p_g(x)$", "$\\dfrac{p_g(x)}{p_{\\text{data}}(x)}$"], "correct": 1 },
+            { "prompt": "Mode collapse in GANs refers to:", "answers": ["The discriminator converging to always output 0.5", "The generator producing only a narrow subset of modes, ignoring data diversity", "The training loss becoming NaN", "The generator memorizing training samples exactly"], "correct": 1 },
+            { "prompt": "In WGAN, the weight clipping constraint $w \\in [-c,\\, c]$ enforces:", "answers": ["The generator is 1-Lipschitz", "The critic (discriminator) is 1-Lipschitz", "Gradients are clipped to prevent explosion", "All weights remain positive"], "correct": 1 },
+            { "prompt": "The non-saturating GAN heuristic changes the generator objective to:", "answers": ["$-\\mathbb{E}[\\log D(G(z))]$ (maximize log-prob of being real)", "$\\mathbb{E}[\\log(1 - D(G(z)))]$ (same as original)", "$\\mathbb{E}[D(G(z)) - D(x)]$", "$\\mathbb{E}[(D(G(z)) - 1)^2]$"], "correct": 0 },
+            { "prompt": "In a Conditional GAN (cGAN), what is the key difference from a standard GAN?", "answers": ["Both $G$ and $D$ receive the class label $y$ as an additional input", "Only the generator $G$ receives the class label $y$", "The discriminator is replaced by a pretrained classifier", "No noise vector $z$ is used as input to $G$"], "correct": 0 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-diffusion-and-attention-realm",
+      "name": "The Diffusion & Attention Realm",
+      "bosses": [
+        {
+          "id": "diffusion-demon",
+          "name": "The Diffusion Demon",
+          "topicTag": "ddpm",
+          "questions": [
+            { "prompt": "In the DDPM forward process, the diffusion kernel $q(z_t|x)$ is:", "answers": ["$\\mathcal{N}(\\beta_t x,\\; \\alpha_t I)$", "$\\mathcal{N}(\\sqrt{\\alpha_t}\\, x,\\; (1-\\alpha_t)I)$ where $\\alpha_t = \\prod(1-\\beta_\\tau)$", "$\\mathcal{N}(x,\\; \\beta_t I)$", "$\\mathcal{N}(0,\\; \\alpha_t I)$"], "correct": 1 },
+            { "prompt": "Rather than predicting clean $x$ directly, the DDPM denoising network is trained to predict:", "answers": ["The next noisy image $z_{t+1}$", "The noise $\\varepsilon$ added at each forward step", "The latent code $z$ in a corresponding VAE", "The discriminator score for the noisy image"], "correct": 1 },
+            { "prompt": "The DDPM denoising network architecture is based on:", "answers": ["A simple feedforward MLP", "A U-Net with skip connections, with timestep $t$ as conditioning input", "A pure transformer encoder with no convolutions", "A bidirectional LSTM with attention"], "correct": 1 },
+            { "prompt": "Generating a new sample from a trained DDPM starts with:", "answers": ["A real training example $x$", "A latent code from a VAE encoder", "$z_T \\sim \\mathcal{N}(0,\\, I)$ (pure Gaussian noise)", "A random entry from a discrete codebook"], "correct": 2 },
+            { "prompt": "Why do diffusion models generally outperform GANs on image quality benchmarks (e.g. FID)?", "answers": ["They also use an adversarial discriminator during training", "They are significantly faster at inference time", "They have more stable likelihood-based training and better mode coverage", "They enforce the Lipschitz constraint via gradient penalty"], "correct": 2 }
+          ]
+        },
+        {
+          "id": "transformer-titan",
+          "name": "The Transformer Titan",
+          "topicTag": "attention-transformers-bert",
+          "questions": [
+            { "prompt": "In scaled dot-product attention, why are scores divided by $\\sqrt{d_k}$?", "answers": ["To ensure all attention weights are strictly positive", "To prevent dot products growing large and causing softmax saturation", "To normalize the value vectors before weighting", "To enforce the 1-Lipschitz constraint"], "correct": 1 },
+            { "prompt": "Positional encodings are required in the Transformer because:", "answers": ["Feedforward layers cannot process variable-length sequences", "Self-attention is order-invariant and does not encode token position by itself", "Multi-head attention uses too much memory without them", "Layer normalization removes all positional information"], "correct": 1 },
+            { "prompt": "BERT-BASE has which configuration?", "answers": ["6 layers, $d=512$, 8 heads, ~65M params", "12 layers, $d=768$, 12 heads, ~110M params", "24 layers, $d=1024$, 16 heads, ~340M params", "12 layers, $d=512$, 8 heads, ~85M params"], "correct": 1 },
+            { "prompt": "In BERT's Masked Language Modeling pre-training, what fraction of tokens are selected for masking?", "answers": ["5%", "10%", "15%", "30%"], "correct": 2 },
+            { "prompt": "When fine-tuning BERT for sentence classification, which token's final hidden state is passed to the classification head?", "answers": ["The last token [SEP]", "The average of all token representations", "The [CLS] token prepended at the start", "The token with the highest self-attention score"], "correct": 2 }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// ── DUNGEON META ──────────────────────────────────────────────────────────────
+const DUNGEON_META = [
+  { icon: "🐍", color: "#5b8dee", bg: "#5b8dee18" },
+  { icon: "👻", color: "#8b5cf6", bg: "#8b5cf618" },
+  { icon: "🏰", color: "#22c55e", bg: "#22c55e18" },
+  { icon: "🌀", color: "#f59e0b", bg: "#f59e0b18" },
+  { icon: "🕳️", color: "#ec4899", bg: "#ec489918" },
+  { icon: "✨", color: "#06b6d4", bg: "#06b6d418" }
+];
+const BOSS_ICONS = ["🐉","💀","👹","🧙","🔥","💎","🌑","☠️","🗡️","🛡️","⚡","🌊"];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let scores = {};         // bossId → {score, answers}
+let currentDungeonIdx = 0;
+let currentBossId = '';
+let currentQuestions = [];
+let currentQIdx = 0;
+let currentAnswers = [];
+let answered = false;
+
+// ── KATEX RENDER ─────────────────────────────────────────────────────────────
+function renderMath(el) {
+  renderMathInElement(el, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false,
+    output: 'html'
+  });
+}
+function setHTML(el, html) {
+  el.innerHTML = html;
+  renderMath(el);
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getBossScore(bossId) {
+  return scores[bossId] ? scores[bossId].score : null;
+}
+
+function getTotalAnswered() {
+  let total = 0;
+  Object.values(scores).forEach(s => total += s.answers.length);
+  return total;
+}
+
+function getTotalScore() {
+  let total = 0;
+  Object.values(scores).forEach(s => total += s.score);
+  return total;
+}
+
+function getBadge(score, total) {
+  if (score === null) return { text: 'New', cls: 'badge-new' };
+  if (score === total) return { text: `${score}/${total} ★`, cls: 'badge-perfect' };
+  if (score >= Math.ceil(total * 0.8)) return { text: `${score}/${total}`, cls: 'badge-good' };
+  if (score >= Math.ceil(total * 0.6)) return { text: `${score}/${total}`, cls: 'badge-ok' };
+  return { text: `${score}/${total} ↻`, cls: 'badge-retry' };
+}
+
+function getRingColor(score, total) {
+  if (score === total) return '#22c55e';
+  if (score >= Math.ceil(total * 0.8)) return '#86efac';
+  if (score >= Math.ceil(total * 0.6)) return '#f5c542';
+  return '#ef4444';
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────────────
+function showHome() {
+  updateBreadcrumb([]);
+  updateOverall();
+  renderDungeons();
+  showScreen('screen-home');
+}
+
+function updateOverall() {
+  const answered = getTotalAnswered();
+  const score = getTotalScore();
+  const maxQ = DATA.dungeons.reduce((a, d) => a + d.bosses.reduce((b, boss) => b + boss.questions.length, 0), 0);
+  document.getElementById('total-score').textContent = score;
+  document.getElementById('progress-text').textContent = `${answered} / ${maxQ} answered`;
+  document.getElementById('main-progress-fill').style.width = maxQ > 0 ? `${(answered/maxQ)*100}%` : '0%';
+}
+
+function renderDungeons() {
+  const grid = document.getElementById('dungeon-grid');
+  grid.innerHTML = '';
+  DATA.dungeons.forEach((dungeon, di) => {
+    const meta = DUNGEON_META[di] || DUNGEON_META[0];
+    const totalQ = dungeon.bosses.reduce((a, b) => a + b.questions.length, 0);
+    const doneQ = dungeon.bosses.reduce((a, b) => {
+      const s = scores[b.id];
+      return a + (s ? s.answers.length : 0);
+    }, 0);
+    const doneScore = dungeon.bosses.reduce((a, b) => {
+      const s = scores[b.id];
+      return a + (s ? s.score : 0);
+    }, 0);
+    const stars = dungeon.bosses.map(b => {
+      const s = scores[b.id];
+      return s && s.score === b.questions.length ? '★' : '☆';
+    });
+    const card = document.createElement('div');
+    card.className = 'dungeon-card';
+    card.style.setProperty('--accent-color', meta.color);
+    card.innerHTML = `
+      <div class="dungeon-icon">${meta.icon}</div>
+      <h3>${dungeon.name}</h3>
+      <div class="dungeon-meta">${dungeon.bosses.length} bosses · ${totalQ} questions</div>
+      ${doneQ > 0 ? `<div class="dungeon-meta" style="margin-top:4px;color:${meta.color}">${doneScore} pts · ${doneQ}/${totalQ} done</div>` : ''}
+      <div class="dungeon-stars">${stars.map(s => `<span class="${s === '★' ? 'star-filled' : 'star-empty'}">${s}</span>`).join('')}</div>
+    `;
+    card.onclick = () => showDungeon(di);
+    grid.appendChild(card);
+  });
+}
+
+// ── DUNGEON ───────────────────────────────────────────────────────────────────
+function showDungeon(di) {
+  currentDungeonIdx = di;
+  const dungeon = DATA.dungeons[di];
+  const meta = DUNGEON_META[di] || DUNGEON_META[0];
+  updateBreadcrumb([dungeon.name]);
+  document.getElementById('dungeon-icon-big').textContent = meta.icon;
+  document.getElementById('dungeon-title').textContent = dungeon.name;
+  document.getElementById('dungeon-subtitle').textContent =
+    `${dungeon.bosses.length} bosses · ${dungeon.bosses.reduce((a,b)=>a+b.questions.length,0)} questions`;
+  renderBossList(dungeon);
+  showScreen('screen-dungeon');
+}
+
+function renderBossList(dungeon) {
+  const list = document.getElementById('boss-list');
+  list.innerHTML = '';
+  dungeon.bosses.forEach((boss, bi) => {
+    const icon = BOSS_ICONS[(currentDungeonIdx * 2 + bi) % BOSS_ICONS.length];
+    const avatarBg = DUNGEON_META[currentDungeonIdx]?.bg || '#5b8dee18';
+    const sc = getBossScore(boss.id);
+    const badge = getBadge(sc, boss.questions.length);
+    const card = document.createElement('div');
+    card.className = 'boss-card';
+    card.innerHTML = `
+      <div class="boss-avatar" style="background:${avatarBg}">${icon}</div>
+      <div class="boss-info">
+        <h3>${boss.name}</h3>
+        <span class="tag">${boss.topicTag}</span>
+      </div>
+      <div class="result-badge ${badge.cls}" style="padding:4px 12px;border-radius:99px;font-size:0.82rem;font-weight:700">${badge.text}</div>
+    `;
+    card.onclick = () => startBoss(currentDungeonIdx, bi);
+    list.appendChild(card);
+  });
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────────
+function startBoss(di, bi) {
+  currentDungeonIdx = di;
+  const dungeon = DATA.dungeons[di];
+  const boss = dungeon.bosses[bi];
+  currentBossId = boss.id;
+  currentQuestions = [...boss.questions];
+  currentQIdx = 0;
+  currentAnswers = [];
+  updateBreadcrumb([dungeon.name, boss.name]);
+  document.getElementById('quiz-boss-name').textContent = boss.name;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = currentQuestions[currentQIdx];
+  const total = currentQuestions.length;
+  answered = false;
+
+  // Progress
+  const pct = (currentQIdx / total) * 100;
+  document.getElementById('quiz-progress-fill').style.width = pct + '%';
+  document.getElementById('quiz-counter').textContent = `${currentQIdx + 1} / ${total}`;
+  document.getElementById('q-number').textContent = `Question ${currentQIdx + 1}`;
+  setHTML(document.getElementById('q-prompt'), q.prompt);
+
+  // Answers
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.answers.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = `<span class="answer-letter">${letters[i]}</span><span class="answer-text"></span>`;
+    btn.querySelector('.answer-text').innerHTML = ans;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+    renderMath(btn);
+  });
+
+  // Feedback & next
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar';
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+function selectAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+
+  const q = currentQuestions[currentQIdx];
+  const correct = q.correct;
+  const isCorrect = chosen === correct;
+  currentAnswers.push(isCorrect);
+
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correct) {
+      btn.classList.add('correct');
+      if (i === chosen) btn.classList.add('selected-correct');
+    } else if (i === chosen) {
+      btn.classList.add('wrong', 'selected-wrong');
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  // Feedback bar
+  const fb = document.getElementById('feedback-bar');
+  document.getElementById('feedback-icon').textContent = isCorrect ? '✅' : '❌';
+  document.getElementById('feedback-text').textContent = isCorrect
+    ? 'Correct! Well done.'
+    : `Wrong — the correct answer was ${['A','B','C','D'][correct]}.`;
+  fb.className = 'feedback-bar show ' + (isCorrect ? 'correct' : 'wrong');
+
+  // Next button
+  const nextBtn = document.getElementById('next-btn');
+  const isLast = currentQIdx === currentQuestions.length - 1;
+  nextBtn.textContent = isLast ? 'See Results →' : 'Next Question →';
+  nextBtn.style.display = 'block';
+}
+
+function nextQuestion() {
+  currentQIdx++;
+  if (currentQIdx >= currentQuestions.length) {
+    finishBoss();
+  } else {
+    renderQuestion();
+  }
+}
+
+function confirmLeave() {
+  if (!answered && currentQIdx === 0) { showDungeon(currentDungeonIdx); return; }
+  if (confirm('Leave the boss fight? Your progress for this attempt will be lost.')) {
+    showDungeon(currentDungeonIdx);
+  }
+}
+
+// ── RESULT ────────────────────────────────────────────────────────────────────
+function finishBoss() {
+  const dungeon = DATA.dungeons[currentDungeonIdx];
+  const boss = dungeon.bosses.find(b => b.id === currentBossId);
+  const score = currentAnswers.filter(Boolean).length;
+  const total = currentAnswers.length;
+
+  // Save (keep best)
+  const prev = scores[currentBossId];
+  if (!prev || score > prev.score) {
+    scores[currentBossId] = { score, answers: currentAnswers };
+  }
+
+  // Result screen
+  const icon = BOSS_ICONS[(currentDungeonIdx * 2 + dungeon.bosses.findIndex(b=>b.id===currentBossId)) % BOSS_ICONS.length];
+  document.getElementById('res-icon').textContent = icon;
+
+  let title, sub;
+  if (score === total) { title = 'Boss Defeated! 🏆'; sub = `Perfect score — you mastered ${boss.name}!`; }
+  else if (score >= Math.ceil(total * 0.8)) { title = 'Great Fight! ⚔️'; sub = `Strong performance — ${boss.name} is weakened.`; }
+  else if (score >= Math.ceil(total * 0.6)) { title = 'Survived! 🛡️'; sub = `You live to fight again. Review the missed questions.`; }
+  else { title = 'Defeated... 💀'; sub = `${boss.name} wins this round. Study and retry!`; }
+
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-sub').textContent = sub;
+  document.getElementById('res-score').textContent = score;
+  const ring = document.getElementById('res-score');
+  ring.style.color = getRingColor(score, total);
+
+  const breakdown = document.getElementById('res-breakdown');
+  breakdown.innerHTML = '';
+  currentAnswers.forEach((ok, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'result-q ' + (ok ? 'ok' : 'bad');
+    dot.textContent = i + 1;
+    dot.title = `Q${i+1}: ${ok ? 'Correct' : 'Wrong'}`;
+    breakdown.appendChild(dot);
+  });
+
+  updateBreadcrumb([dungeon.name, boss.name, 'Result']);
+  showScreen('screen-result');
+}
+
+function retryBoss() {
+  const dungeon = DATA.dungeons[currentDungeonIdx];
+  const bi = dungeon.bosses.findIndex(b => b.id === currentBossId);
+  startBoss(currentDungeonIdx, bi);
+}
+
+// ── BREADCRUMB ────────────────────────────────────────────────────────────────
+function updateBreadcrumb(parts) {
+  const bc = document.getElementById('breadcrumb');
+  if (parts.length === 0) { bc.innerHTML = '<span>World Map</span>'; return; }
+  bc.innerHTML = 'World Map › ' + parts.map((p, i) =>
+    i === parts.length - 1 ? `<span>${p}</span>` : p
+  ).join(' › ');
+}
+
+// ── SCROLL TOP ────────────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('scroll-top').classList.toggle('show', window.scrollY > 200);
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+showHome();
+</script>
+</body>
+</html>
