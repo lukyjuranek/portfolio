@@ -22,33 +22,39 @@ const image = imageMap[src];
 ---
 
 <a href={href} class="group block">
-  <div class="flex flex-col lg:flex-row max-w-5xl rounded-xl bg-neutral-900/50 border border-white/[0.06] transition-all duration-300 ease-out hover:border-white/[0.12] hover:bg-neutral-900/80">
-    <div class="lg:w-[45%] shrink-0 overflow-hidden rounded-t-xl lg:rounded-t-none lg:rounded-l-xl flex items-end bg-neutral-900/50">
+  <div class="flex flex-col lg:flex-row max-w-5xl rounded-xl border overflow-hidden" style="background: var(--color-surface); border-color: var(--color-border); transition: border-color var(--duration-base) var(--ease-out), background-color var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);" onmouseenter="this.style.borderColor='var(--color-border-hover)'; this.style.backgroundColor='var(--color-surface-hover)'; this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--color-border)'; this.style.backgroundColor='var(--color-surface)'; this.style.transform='translateY(0)'">
+    <div class="lg:w-[45%] shrink-0 overflow-hidden flex items-end" style="background: var(--color-bg-secondary);">
       {image ? (
         <Image
           src={image}
           alt={`${title} platform screenshot`}
-          class="w-full h-auto transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+          class="w-full h-auto"
+          style="transition: transform var(--duration-slow) var(--ease-out);"
+          onmouseenter="this.style.transform='scale(1.02)'"
+          onmouseleave="this.style.transform='scale(1)'"
           loading="lazy"
         />
       ) : (
         <img
           src={src}
           alt={`${title} platform screenshot`}
-          class="w-full h-auto transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+          class="w-full h-auto"
+          style="transition: transform var(--duration-slow) var(--ease-out);"
+          onmouseenter="this.style.transform='scale(1.02)'"
+          onmouseleave="this.style.transform='scale(1)'"
           loading="lazy"
         />
       )}
     </div>
-    <div class="flex-1 p-5 lg:p-8 flex flex-col justify-center gap-3">
+    <div class="flex-1 p-6 lg:p-8 flex flex-col justify-center gap-3">
       <div class="flex items-center gap-2 text-lg font-medium text-white">
         {title}
-        <svg class="h-3.5 w-3.5 text-gray-500 group-hover:text-gray-300 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg class="h-3.5 w-3.5 flex-shrink-0" style="color: var(--color-text-tertiary); transition: color var(--duration-fast) var(--ease-out);" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" onmouseenter="this.style.color='var(--color-text-secondary)'" onmouseleave="this.style.color='var(--color-text-tertiary)'">
           <title>External link</title>
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
         </svg>
       </div>
-      <p class="text-gray-400 text-sm font-light leading-relaxed">{text}</p>
+      <p class="text-base font-normal leading-relaxed" style="color: var(--color-text-secondary); line-height: 1.65;">{text}</p>
     </div>
   </div>
 </a>
