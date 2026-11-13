@@ -28,9 +28,10 @@ interface Props {
   title: string;
   text: string;
   tag?: 'WEB' | 'GAME' | 'APP' | 'OTHER' | 'ML' | 'CLI';
+  year?: number;
 }
 
-const { href, src, title, text, tag = 'other' } = Astro.props;
+const { href, src, title, text, tag = 'other', year } = Astro.props;
 
 const tagColors: Record<string, { bg: string; text: string; border: string }> = {
   WEB: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
@@ -106,6 +107,9 @@ const image = imageMap[src];
         )}
       </div>
       <div class="text-gray-400 text-sm font-light leading-relaxed">{text}</div>
+      {year && (
+        <div class="text-gray-500 text-xs font-light mt-1">{year}</div>
+      )}
     </div>
   </div>
 </a>
